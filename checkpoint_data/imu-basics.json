@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-hovering-reading",
+      "question": "A Duckiedrone hovers perfectly still in mid-air, touching nothing. What does its accelerometer read on the vertical axis, and why is it not zero?",
+      "model_answer": "About +9.81 m/s^2. The propellers hold the Duckiedrone up the same way the table did, so it is not in free fall and its proper acceleration points up.",
+      "evidence": [
+        {
+          "label": "The accelerometer",
+          "anchor": "#the-accelerometer"
+        }
+      ]
+    },
+    {
+      "id": "imu-lift-reading",
+      "question": "An accelerometer sits on the floor of a lift. What does it read on the vertical axis while the lift speeds up going up, and what does it read if the cable snaps?",
+      "model_answer": "While the lift speeds up going up, the reading is above 9.81 m/s^2, because the upward linear acceleration adds to the support against gravity in Equation (1). If the cable snaps, the lift and the sensor are in free fall and the reading drops to about zero.",
+      "evidence": [
+        {
+          "label": "The accelerometer",
+          "anchor": "#the-accelerometer"
+        }
+      ]
+    },
+    {
+      "id": "imu-gyroscope-heading",
+      "question": "The gyroscope reads zero on every axis right now. Does that tell which way the Duckiedrone is facing?",
+      "model_answer": "No. A zero rate only means the Duckiedrone is not turning at this moment. The heading comes from adding up the rate over time from a known starting angle.",
+      "evidence": [
+        {
+          "label": "The gyroscope",
+          "anchor": "#the-gyroscope"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-rate-source",
+      "question": "An application needs /mavros/imu/data_raw at a different rate. What should change, and why does changing IMU_INTEG_RATE not do it?",
+      "model_answer": "The interval of the HIGHRES_IMU MAVLink message. IMU_INTEG_RATE acts inside PX4 on the data it prepares; how often that data reaches the Raspberry Pi is decided at the MAVLink link, one interval per message.",
+      "evidence": [
+        {
+          "label": "Configuring IMU rates and streams",
+          "anchor": "#configuring-imu-rates-and-streams"
+        }
+      ]
+    },
+    {
+      "id": "imu-stream-rates",
+      "question": "Which MAVLink messages control the data_raw and data IMU topic rates?",
+      "model_answer": "The HIGHRES_IMU interval controls /mavros/imu/data_raw; the ATTITUDE_QUATERNION interval controls /mavros/imu/data, which combines attitude with the latest acceleration.",
+      "evidence": [
+        {
+          "label": "What actually crosses the link",
+          "anchor": "#what-actually-crosses-the-link"
+        }
+      ]
+    },
+    {
+      "id": "imu-plugin-traffic",
+      "question": "Why does removing the MAVROS2 imu plugin not reduce the traffic between the flight controller and the Raspberry Pi?",
+      "model_answer": "The plugin only turns MAVLink messages that have already arrived into ROS 2 topics. PX4 decides what to send and keeps sending HIGHRES_IMU and ATTITUDE_QUATERNION at their intervals; only changing those intervals reduces the traffic.",
+      "evidence": [
+        {
+          "label": "One switch that looks like a rate and is not",
+          "anchor": "#one-switch-that-looks-like-a-rate-and-is-not"
+        }
+      ]
+    }
+  ]
+}

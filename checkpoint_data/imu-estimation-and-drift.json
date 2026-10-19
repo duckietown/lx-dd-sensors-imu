@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-no-position",
+      "question": "Why can an IMU alone not provide a reliable direct position measurement?",
+      "model_answer": "Position is not measured directly. Estimating it requires integrating noisy acceleration twice, so errors accumulate quickly without an outside reference to correct the estimate.",
+      "evidence": [
+        {
+          "label": "What an IMU does not measure",
+          "anchor": "#what-an-imu-does-not-measure"
+        }
+      ]
+    },
+    {
+      "id": "imu-roll-pitch-yaw-reference",
+      "question": "Why can a stationary IMU measurement help correct roll and pitch, but not yaw?",
+      "model_answer": "Proper acceleration points opposite gravity and shifts across the sensor axes when the Duckiedrone tilts, providing a roll and pitch reference. Rotating about the vertical leaves that reading unchanged, so it cannot distinguish headings.",
+      "evidence": [
+        {
+          "label": "Why the IMU data matters",
+          "anchor": "#why-the-imu-data-matters"
+        }
+      ]
+    },
+    {
+      "id": "imu-bias-position-drift",
+      "question": "How does a constant accelerometer bias change dead-reckoned position error over time?",
+      "model_answer": "The bias produces a velocity error proportional to elapsed time and a position error proportional to the square of elapsed time, even if the Duckiedrone never moves.",
+      "evidence": [
+        {
+          "label": "What an IMU does not measure",
+          "anchor": "#what-an-imu-does-not-measure"
+        }
+      ]
+    }
+  ]
+}

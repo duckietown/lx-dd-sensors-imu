@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-mavros-bridge",
+      "question": "What does MAVROS2 do with the IMU data it receives from PX4 over MAVLink?",
+      "model_answer": "MAVROS2 translates the MAVLink data into ROS 2 sensor_msgs/Imu messages and publishes them on its IMU topics.",
+      "evidence": [
+        {
+          "label": "From PX4 to MAVROS2 over MAVLink",
+          "anchor": "#from-px4-to-mavros2-over-mavlink"
+        }
+      ]
+    },
+    {
+      "id": "imu-no-dtps-driver",
+      "question": "Why does the IMU reach ROS 2 through MAVROS2 instead of through a DTPS driver on the Raspberry Pi, like the time-of-flight rangefinder and the camera?",
+      "model_answer": "The IMU chip sits on the flight-controller board and PX4 already reads it, because the fast stabilization loop needs it there. PX4 also fuses the attitude estimate before the data leaves the board, so a Raspberry Pi driver would only repeat what MAVROS2 already bridges.",
+      "evidence": [
+        {
+          "label": "Why not a Duckietown Postal Service (DTPS) driver, like the other sensors?",
+          "anchor": "#why-not-a-duckietown-postal-service-dtps-driver-like-the-other-sensors"
+        }
+      ]
+    },
+    {
+      "id": "imu-estimator-measurements",
+      "question": "Which data travels alongside PX4's orientation estimate without being an output of its attitude estimator?",
+      "model_answer": "Calibrated angular rates and accelerations accompany the orientation quaternion. They are sensor measurements, not outputs of the EKF2 attitude estimator.",
+      "evidence": [
+        {
+          "label": "The flight controller's onboard attitude estimator",
+          "anchor": "#the-flight-controllers-onboard-attitude-estimator"
+        }
+      ]
+    }
+  ]
+}
