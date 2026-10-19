@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT / 'packages' / 'solution'))
+sys.path.insert(0, str(REPO_ROOT / "packages" / "solution"))
 
 from solution.imu_math import quaternion_to_euler  # noqa: E402
 
@@ -62,10 +62,12 @@ def _euler_to_quaternion(roll, pitch, yaw):
     cr, sr = math.cos(roll / 2), math.sin(roll / 2)
     cp, sp = math.cos(pitch / 2), math.sin(pitch / 2)
     cy, sy = math.cos(yaw / 2), math.sin(yaw / 2)
-    return (sr * cp * cy - cr * sp * sy,
-            cr * sp * cy + sr * cp * sy,
-            cr * cp * sy - sr * sp * cy,
-            cr * cp * cy + sr * sp * sy)
+    return (
+        sr * cp * cy - cr * sp * sy,
+        cr * sp * cy + sr * cp * sy,
+        cr * cp * sy - sr * sp * cy,
+        cr * cp * cy + sr * sp * sy,
+    )
 
 
 def _rotation_matrix(roll, pitch, yaw):
@@ -83,11 +85,13 @@ def _rotation_matrix(roll, pitch, yaw):
 def _same_rotation(a, b, tol=1e-6):
     """Compare two roll/pitch/yaw triples by the rotation they describe."""
     ra, rb = _rotation_matrix(*a), _rotation_matrix(*b)
-    return all(abs(ra[i][j] - rb[i][j]) < tol for i in range(3) for j in range(3))
+    return all(
+        abs(ra[i][j] - rb[i][j]) < tol for i in range(3) for j in range(3)
+    )
 
 
 def test_gimbal_lock_pitch_90():
-    # pitch = +pi/2: roll and yaw are no longer separable, so the returned triple
+    # At pitch = +pi/2, roll and yaw are no longer separable, so the returned triple
     # cannot equal the one that built the quaternion. It must still describe the
     # same rotation, which is what this asserts.
     original = (math.radians(20.0), math.pi / 2, math.radians(50.0))
@@ -105,9 +109,16 @@ def test_gimbal_lock_pitch_minus_90():
 
 def test_round_trip_away_from_the_poles():
     # Away from gimbal lock the original angles come back unchanged.
-    for roll_deg, pitch_deg, yaw_deg in [(0, 0, 0), (20, 40, 50), (-35, -60, 170),
-                                         (10, 89, -120), (-90, 30, 45)]:
-        original = tuple(math.radians(v) for v in (roll_deg, pitch_deg, yaw_deg))
+    for roll_deg, pitch_deg, yaw_deg in [
+        (0, 0, 0),
+        (20, 40, 50),
+        (-35, -60, 170),
+        (10, 89, -120),
+        (-90, 30, 45),
+    ]:
+        original = tuple(
+            math.radians(v) for v in (roll_deg, pitch_deg, yaw_deg)
+        )
         got = quaternion_to_euler(*_euler_to_quaternion(*original))
         assert _same_rotation(got, original), (roll_deg, pitch_deg, yaw_deg)
 

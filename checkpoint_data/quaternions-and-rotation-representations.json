@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-quaternion-purpose",
+      "question": "Why are quaternions useful for representing orientation in practice?",
+      "model_answer": "A unit quaternion represents orientation without the gimbal-lock singularity of three Euler angles, while remaining more compact than a rotation matrix.",
+      "evidence": [
+        {
+          "label": "Quaternions: the practical way out",
+          "anchor": "#quaternions-the-practical-way-out"
+        }
+      ]
+    },
+    {
+      "id": "imu-representation-sizes",
+      "question": "How many values do Euler angles, a rotation matrix, and a quaternion use to represent orientation?",
+      "model_answer": "Euler angles use three values, a rotation matrix uses nine, and a quaternion uses four.",
+      "evidence": [
+        {
+          "label": "Comparing rotation representations",
+          "anchor": "#comparing-rotation-representations"
+        }
+      ]
+    },
+    {
+      "id": "imu-quaternion-display",
+      "question": "Why convert a flight controller's quaternion orientation estimate to Euler angles for a display?",
+      "model_answer": "Roll, pitch, and yaw are easier for people to interpret than quaternion components. Converting for display retains the chosen Euler convention and its gimbal-lock limitation.",
+      "evidence": [
+        {
+          "label": "Converting to Euler angles",
+          "anchor": "#converting-to-euler-angles"
+        }
+      ]
+    }
+  ]
+}

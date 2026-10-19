@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-gimbal-lock",
+      "question": "What is gimbal lock?",
+      "model_answer": "At pitch plus or minus 90 degrees, the ZYX Euler-angle representation is singular: roll and yaw no longer describe independent infinitesimal rotations. The Duckiedrone can still rotate about all three physical axes.",
+      "evidence": [
+        {
+          "label": "Gimbal lock",
+          "anchor": "#gimbal-lock"
+        }
+      ]
+    },
+    {
+      "id": "imu-euler-axes",
+      "question": "Which axes do roll, pitch, and yaw describe in this notebook?",
+      "model_answer": "Roll turns about the x axis, pitch about the y axis, and yaw about the z axis.",
+      "evidence": [
+        {
+          "label": "Euler angles and the rotation matrix",
+          "anchor": "#euler-angles-and-the-rotation-matrix"
+        }
+      ]
+    },
+    {
+      "id": "imu-rotation-order",
+      "question": "Why does the order of roll, pitch, and yaw rotations matter?",
+      "model_answer": "Three-dimensional rotations generally do not commute, so changing their order changes the resulting orientation. This notebook uses the ZYX convention.",
+      "evidence": [
+        {
+          "label": "Euler angles and the rotation matrix",
+          "anchor": "#euler-angles-and-the-rotation-matrix"
+        }
+      ]
+    }
+  ]
+}

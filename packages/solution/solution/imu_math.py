@@ -1,7 +1,7 @@
 """Pure-Python IMU math helpers.
 
 This module has no ROS 2 dependency on purpose, so it can be imported
-from a plain Python interpreter (e.g. from the notebook or the tests)
+from a plain Python interpreter (e.g., from the notebook or the tests)
 without needing ``rclpy``. The ROS 2 subscriber in
 ``imu_subscriber.py`` re-uses these helpers.
 """
@@ -12,36 +12,39 @@ from dataclasses import dataclass
 
 @dataclass
 class ImuReading:
+    """Decoded IMU sample in ROS-compatible units."""
+
     stamp_sec: float
     accel: tuple  # (ax, ay, az) in m/s^2
-    gyro: tuple   # (wx, wy, wz) in rad/s
-    rpy: tuple    # (roll, pitch, yaw) in rad
+    gyro: tuple  # (wx, wy, wz) in rad/s
+    rpy: tuple  # (roll, pitch, yaw) in rad
 
 
-# How close |sin(pitch)| may get to 1 before the roll and yaw formulas below stop
-# being usable. Past this point both of their arguments have collapsed to zero.
+# How close |sin(pitch)| may get to 1 before the roll and yaw formulas
+# below stop being usable. Past this point both arguments have collapsed
+# to zero.
 _POLE_TOL = 1e-12
 
 
 def quaternion_to_euler(x: float, y: float, z: float, w: float) -> tuple:
-    """Convert a unit quaternion (x, y, z, w) to roll / pitch / yaw (rad).
+    """Convert a unit quaternion to roll, pitch, and yaw in radians.
 
-    Uses the standard ZYX intrinsic convention (yaw about Z, then pitch
-    about Y, then roll about X), which matches what MAVROS2 publishes in
-    the ROS frame.
+    The quaternion order is ``(x, y, z, w)``.
+    It uses ZYX intrinsic rotations: yaw about Z, pitch about Y.
+    It finishes with roll about X.
     """
     sinp = 2.0 * (w * y - z * x)
-    # A quaternion that is not exactly unit length can push this a hair outside
-    # [-1, 1], which would make asin raise.
+    # A non-unit quaternion can push this outside [-1, 1]. Clamping
+    # prevents asin from raising.
     sinp = max(-1.0, min(1.0, sinp))
     pitch = math.asin(sinp)
 
     if abs(sinp) >= 1.0 - _POLE_TOL:
-        # Gimbal lock: at pitch = +/-90 degrees the roll and yaw axes coincide, so
-        # only their combination is defined and the two cannot be separated. Both
-        # atan2 arguments below are zero here, which would return an arbitrary
-        # split of that combination and so describe a different rotation. Put the
-        # whole turn into yaw instead, which keeps the returned angles faithful.
+        # At pitch = +/-90 degrees, roll and yaw axes coincide.
+        # Only their combined angle is defined.
+        # Both atan2 arguments are zero, which would pick an arbitrary
+        # split and describe a different rotation. Put the whole turn in
+        # yaw to keep the returned angles faithful.
         roll = 0.0
         yaw = -math.copysign(2.0, sinp) * math.atan2(x, w)
         return roll, pitch, yaw

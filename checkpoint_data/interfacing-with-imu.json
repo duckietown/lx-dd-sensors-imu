@@ -1,0 +1,37 @@
+{
+  "checkpoints": [
+    {
+      "id": "imu-subscriber-qos",
+      "question": "Why does the subscriber use qos_profile_sensor_data, and how can that choice be checked on the Duckiedrone?",
+      "model_answer": "It matches the MAVROS2 IMU publisher, which is best effort with a queue depth of 5. ros2 topic info -v /mavros/imu/data prints the publisher's QoS to compare against.",
+      "evidence": [
+        {
+          "label": "Activity 1: write the subscriber",
+          "anchor": "#activity-1-write-the-subscriber"
+        }
+      ]
+    },
+    {
+      "id": "imu-store-not-print",
+      "question": "Why does cb_imu store the reading in self.latest_reading instead of printing it?",
+      "model_answer": "Messages arrive at about 50 Hz, far faster than anyone can read. Storing keeps only the newest reading, and the one-second timer in cb_log prints one line from it.",
+      "evidence": [
+        {
+          "label": "Activity 1: write the subscriber",
+          "anchor": "#activity-1-write-the-subscriber"
+        }
+      ]
+    },
+    {
+      "id": "imu-stationary-acceleration",
+      "question": "Why does a level, stationary Duckiedrone show about +9.81 m/s^2 in the subscriber's accel[2] reading?",
+      "model_answer": "The accelerometer reports upward proper acceleration from supporting the Duckiedrone against gravity, not its zero inertial acceleration. On the level FLU axes, that support appears on the positive z component.",
+      "evidence": [
+        {
+          "label": "Look at the data first",
+          "anchor": "#look-at-the-data-first"
+        }
+      ]
+    }
+  ]
+}
