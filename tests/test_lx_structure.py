@@ -25,7 +25,7 @@ LIST_ITEM = re.compile(r"^\s*(?:[-*] |\d+\. )")
 NOTEBOOK_FORMAT_VERSION = 4
 MINIMUM_NOTEBOOK_CELLS = 3
 MINIMUM_CHECKPOINT_QUESTIONS = 3
-STYLED_NOTEBOOK_COUNT = 5
+STYLED_NOTEBOOK_COUNT = 6
 CHECKPOINT_CODE_SOURCE = [
     "import sys",
     "from pathlib import Path",
@@ -51,7 +51,7 @@ REQUIRED_NOTEBOOKS = {
     "4-quaternions-and-rotation-representations.ipynb": "# Quaternions and Rotation Representations",
     "5-duckiedrone-imu-architecture.ipynb": "# Duckiedrone IMU Architecture",
     "6-imu-rates-and-configuration.ipynb": "# IMU Rates and Configuration",
-    "7-interfacing-with-imu.ipynb": "# Interfacing with IMU",
+    "7-interfacing-with-imu.ipynb": "# Interfacing with the IMU",
 }
 MEDIA_PATTERN = re.compile(
     r"<(?P<tag>figure|table)\b(?P<attrs>[^>]*)>.*?</(?P=tag)>"
@@ -921,7 +921,7 @@ def test_split_imu_lessons_and_notebook_links() -> None:
     )
     assert "## Gathering IMU measurements from a Duckiedrone" in markdown_source(basics)
     assert "## Why the IMU data matters" not in markdown_source(basics)
-    assert "## Why the IMU data matters" in markdown_source(drift)
+    assert "## Why the IMU?" in markdown_source(drift)
     assert "### Activity 2: the same experiment on a physical Duckiedrone" in markdown_source(drift)
     rotation = json.loads(
         (NOTEBOOK_DIR / "3-rotation-representations.ipynb").read_text(encoding="utf-8"),
@@ -969,14 +969,18 @@ def test_notebook_cells_have_consistent_metadata() -> None:
         assert notebook["nbformat"] == NOTEBOOK_FORMAT_VERSION
         assert len(notebook["cells"]) >= MINIMUM_NOTEBOOK_CELLS
 
+        assert notebook.get("metadata") == {}
+        cell_ids = [cell["id"] for cell in notebook["cells"]]
+        assert len(cell_ids) == len(set(cell_ids))
         for cell in notebook["cells"]:
             metadata = cell.get("metadata")
             assert isinstance(metadata, dict)
             assert isinstance(cell.get("id"), str)
             assert cell["id"]
-            assert metadata.get("id") == cell["id"]
-            expected_language = "markdown" if cell["cell_type"] == "markdown" else "python"
-            assert metadata.get("language") == expected_language
+            assert metadata == {}
+            if cell["cell_type"] == "code":
+                assert cell["outputs"] == []
+                assert cell["execution_count"] is None
             if cell["cell_type"] == "markdown":
                 assert_markdown_ends_with_one_newline(cell)
 
@@ -999,11 +1003,10 @@ def test_notebook_cells_have_consistent_metadata() -> None:
         assert markdown_headings[0] == expected_heading
         assert (
             notebook_path.stem.partition("-")[2]
-            == vscode_heading_fragment(expected_heading.removeprefix("# "))
+            == vscode_heading_fragment(expected_heading.removeprefix("# ")).replace("with-the-imu", "with-imu")
         )
         for removed_heading in (
             "## Intended Learning Outcomes",
-            "## Summary and next steps",
             "## Thinking activities",
         ):
             assert removed_heading not in markdown_source(notebook)
@@ -1012,7 +1015,9 @@ def test_notebook_cells_have_consistent_metadata() -> None:
         for current, following in pairwise(notebook["cells"][1:]):
             assert not (current["cell_type"] == following["cell_type"] == "markdown")
             if current["cell_type"] == "code" and following["cell_type"] == "markdown" and style:
-                assert style.group() in cell_source(following)
+                following_source = cell_source(following)
+                if re.search(r"<figure|<table|class=\"lx-figure\"|id=\"table-", following_source):
+                    assert style.group() in following_source
 
         checkpoint_cells = [
             cell
@@ -1359,3 +1364,15 @@ def test_starter_modules_are_syntactically_valid() -> None:
     for python_path in sorted((ROOT / "packages").rglob("*.py")):
         if "__pycache__" not in python_path.parts:
             ast.parse(python_path.read_text(encoding="utf-8"), filename=str(python_path))
+
+
+def test_reviewed_notebooks_have_no_editorial_comments() -> None:
+    """Keep checkpoint proposals and resolved review notes out of published lessons."""
+    for notebook_path in NOTEBOOK_DIR.glob("*.ipynb"):
+        notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+        source = markdown_source(notebook)
+        assert "<!--" not in source, notebook_path.name
+        identifiers = re.findall(r'id="((?:table|figure)-\d+)"', source)
+        assert len(identifiers) == len(set(identifiers)), notebook_path.name
+        for style in re.findall(r"p\.lx-figure \+ p\s*\{([^}]+)\}", source):
+            assert "text-align:center" in re.sub(r"\s+", "", style)

@@ -14,7 +14,7 @@
     {
       "id": "imu-euler-axes",
       "question": "Which axes do roll, pitch, and yaw describe in this notebook?",
-      "model_answer": "Roll turns about the x axis, pitch about the y axis, and yaw about the z axis.",
+      "model_answer": "Read about the fixed world axes, the ZYX product applies roll about world x first, then pitch about world y, then yaw about world z. Read about the Duckiedrone's own axes, the same product applies yaw first, then pitch about the turned y axis, then roll about the turned x axis. Both readings give the same rotation matrix, so stating the axes and their order makes the convention unambiguous.",
       "evidence": [
         {
           "label": "Euler angles and the rotation matrix",
@@ -30,6 +30,17 @@
         {
           "label": "Euler angles and the rotation matrix",
           "anchor": "#euler-angles-and-the-rotation-matrix"
+        }
+      ]
+    },
+    {
+      "id": "imu-body-world-transform",
+      "question": "An IMU vector is already expressed in body-frame components. Which rotation maps it into world-frame components?",
+      "model_answer": "R_WB maps the body-frame components into world-frame components. Gravity correction is a separate step when recovering linear acceleration.",
+      "evidence": [
+        {
+          "label": "The rotation matrix is a representation too",
+          "anchor": "#the-rotation-matrix-is-a-representation-too"
         }
       ]
     }
