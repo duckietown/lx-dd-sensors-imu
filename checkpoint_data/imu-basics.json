@@ -2,8 +2,8 @@
   "checkpoints": [
     {
       "id": "imu-hovering-reading",
-      "question": "A Duckiedrone hovers perfectly still in mid-air, touching nothing. What does its accelerometer read on the vertical axis, and why is it not zero?",
-      "model_answer": "About +9.81 m/s^2. The propellers hold the Duckiedrone up the same way the table did, so it is not in free fall and its proper acceleration points up.",
+      "question": "A level Duckiedrone hovers perfectly still. With the vertical axis pointing up, what does its accelerometer read, and why is it not zero?",
+      "model_answer": "About +9.81 m/s^2, neglecting sensor error and vibration. Thrust supports the Duckiedrone against gravity, so its proper acceleration points up even though its linear acceleration is zero.",
       "evidence": [
         {
           "label": "The accelerometer",
@@ -13,8 +13,8 @@
     },
     {
       "id": "imu-lift-reading",
-      "question": "An accelerometer sits on the floor of a lift. What does it read on the vertical axis while the lift speeds up going up, and what does it read if the cable snaps?",
-      "model_answer": "While the lift speeds up going up, the reading is above 9.81 m/s^2, because the upward linear acceleration adds to the support against gravity in Equation (1). If the cable snaps, the lift and the sensor are in free fall and the reading drops to about zero.",
+      "question": "An accelerometer sits on the floor of a lift with its vertical axis pointing up. What does it read while the lift speeds up going up, and in ideal free fall?",
+      "model_answer": "While the lift accelerates upward, the reading exceeds 9.81 m/s^2: upward linear acceleration adds to the support against gravity. In ideal free fall, the sensor reads approximately zero.",
       "evidence": [
         {
           "label": "The accelerometer",
@@ -25,11 +25,44 @@
     {
       "id": "imu-gyroscope-heading",
       "question": "The gyroscope reads zero on every axis right now. Does that tell which way the Duckiedrone is facing?",
-      "model_answer": "No. A zero rate only means the Duckiedrone is not turning at this moment. The heading comes from adding up the rate over time from a known starting angle.",
+      "model_answer": "No. An ideal zero angular velocity indicates no rotation at that instant, but does not specify orientation. Reconstructing orientation requires integrating the angular-velocity vector with a known initial orientation and the appropriate rotation equations; sensor errors accumulate during that integration.",
       "evidence": [
         {
           "label": "The gyroscope",
           "anchor": "#the-gyroscope"
+        }
+      ]
+    },
+    {
+      "id": "imu-capacitive-readout",
+      "question": "Which electrical property changes when the suspended mass moves in a capacitive MEMS accelerometer?",
+      "model_answer": "The capacitance between the moving and fixed electrodes changes.",
+      "evidence": [
+        {
+          "label": "The accelerometer",
+          "anchor": "#the-accelerometer"
+        }
+      ]
+    },
+    {
+      "id": "imu-coriolis-response",
+      "question": "Why does a vibrating mass respond to rotation in a MEMS gyroscope?",
+      "model_answer": "Rotation produces a Coriolis response perpendicular to the driven motion, which the sensing electrodes detect.",
+      "evidence": [
+        {
+          "label": "The gyroscope",
+          "anchor": "#the-gyroscope"
+        }
+      ]
+    },
+    {
+      "id": "imu-measured-estimated",
+      "question": "Which two fields report sensor measurements, and which field reports an orientation estimate?",
+      "model_answer": "linear_acceleration and angular_velocity report the acceleration and gyroscope measurements; orientation reports a computed orientation estimate.",
+      "evidence": [
+        {
+          "label": "Gathering IMU measurements from a Duckiedrone",
+          "anchor": "#gathering-imu-measurements-from-a-duckiedrone"
         }
       ]
     }

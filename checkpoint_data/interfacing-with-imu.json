@@ -13,8 +13,8 @@
     },
     {
       "id": "imu-store-not-print",
-      "question": "Why does cb_imu store the reading in self.latest_reading instead of printing it?",
-      "model_answer": "Messages arrive at about 50 Hz, far faster than anyone can read. Storing keeps only the newest reading, and the one-second timer in cb_log prints one line from it.",
+      "question": "The listener prints once per second while ros2 topic hz reports about 50 Hz. Which part of the program explains the difference?",
+      "model_answer": "cb_imu updates the stored reading whenever a message arrives. A separate timer calls cb_log once per second to display the latest stored reading, so the display frequency differs from the input arrival rate.",
       "evidence": [
         {
           "label": "Activity 1: write the subscriber",

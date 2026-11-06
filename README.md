@@ -1,27 +1,34 @@
 <p align="center">
-<a href="https://duckietown.com"><img src="./assets/images/dtlogo.png" alt="Duckietown Logo" width="50%"></a>
+<a href="https://duckietown.com"><img src="./assets/images/dtlogo.png" alt="Duckietown Logo" width="30%"></a>
 </p>
 
 # Learning Experience (LX): Duckiedrone IMU Sensors
 
 `Software: ente`; `Hardware: DD24-B`
 
-An inertial measurement unit (IMU) provides the acceleration and angular-rate measurements a flight
-controller uses to estimate orientation. Small measurement errors accumulate when those readings are
-integrated. This learning experience (LX) covers what an IMU measures, how to represent the flight
-controller's orientation estimate, how the readings reach a ROS 2 topic, and how to subscribe to them.
+The Duckiedrone uses inertial measurements to track rotation and estimate the attitude needed
+for flight control. Making sense of those measurements starts with a stationary device: its
+accelerometer reports support against gravity even though it is not moving, and small errors
+in its readings can grow into large position errors when integrated.
+
+This learning experience follows that connection from the accelerometer and gyroscope to the
+values available in ROS 2. Recorded data and interactive examples develop the measurement and
+rotation concepts before live activities trace the software path, change a message rate, and
+use a subscriber to interpret a tilt-and-hold experiment.
 
 ## Intended learning outcomes
 
 After completing this LX, learners will be able to:
 
-1. Explain what an accelerometer and a gyroscope each measure, and predict what happens to a position estimate built by integrating acceleration over time.
+1. Explain how the accelerometer and gyroscope produce their measurements, and interpret their readings for a stationary or tilted Duckiedrone.
 
-2. Compare Euler angles, rotation matrices and quaternions as ways of writing an orientation, and identify the orientations at which Euler angles break down.
+2. Characterize a stationary acceleration recording and explain how residual errors accumulate in a dead-reckoned position estimate.
 
-3. Trace an IMU reading from the sensor chip to a ROS 2 topic, naming what changes it at each step and what sets its rate.
+3. Compare Euler angles, rotation matrices, and unit quaternions, including frame conventions and Euler-angle singularities.
 
-4. Write, deploy, and run a ROS 2 node on a Duckiedrone that subscribes to the IMU topic and reports acceleration, angular velocity, and roll, pitch and yaw.
+4. Trace the processing of IMU measurements into ROS 2, request a different MAVLink stream interval, and measure its effect on message arrival.
+
+5. Complete or inspect the supplied subscriber, run it on a Duckiedrone, and relate its acceleration and attitude display to a known pose.
 
 ## Run this LX
 
@@ -66,13 +73,14 @@ Keep a separate base-station terminal available for device commands.
 | --- | --- |
 | Read notebooks, edit [imu_subscriber.py](./packages/solution/solution/imu_subscriber.py), and run local notebook activities | `dts code editor` |
 | Run `dts duckiebot virtual connect`, `dts code build`, `dts code workbench`, or physical-device `ssh` | A separate base-station terminal, outside `dts code editor` |
-| Inspect `/mavros/imu/data` with `ros2 topic` in [Notebook 7](./notebooks/7-interfacing-with-imu.ipynb) | The Duckiedrone's MAVROS2 container shell, reached after connecting to the device |
+| Inspect IMU topics, request stream intervals, and record data in Notebooks 6–7 | The Duckiedrone's MAVROS2 container shell, reached after connecting to the device |
 | Watch subscriber output and stop a live run | The original workbench terminal; keep it ready for `Ctrl-C` |
 
 ### Local notebooks and checkpoints
 
-Open the notebooks in `dts code editor`. Interactive checkpoints require notebook metadata supplied
-by that editor; a Jupyter/IPython kernel with `ipywidgets` alone is not sufficient. Work through the
+Open the notebooks in `dts code editor`. Interactive checkpoints use the notebook path supplied
+by that editor in execution-message metadata; this does not require saved notebook metadata.
+A Jupyter/IPython kernel with `ipywidgets` alone is not sufficient. Work through the
 first five notebooks without a live Duckiedrone. [Notebook 6](./notebooks/6-imu-rates-and-configuration.ipynb)
 can be read offline, but its live rate-change example needs a disarmed Duckiedrone.
 
@@ -86,17 +94,19 @@ of the propellers.
 
 ## Complete the IMU subscriber
 
-Fill the two `TO IMPLEMENT` blocks in [imu_subscriber.py](./packages/solution/solution/imu_subscriber.py):
-subscribe with the sensor-data quality-of-service profile, then unpack acceleration, angular
-velocity, and orientation as described in [Notebook 7](./notebooks/7-interfacing-with-imu.ipynb).
+The two `TO IMPLEMENT` blocks in [imu_subscriber.py](./packages/solution/solution/imu_subscriber.py)
+identify the subscription and message-decoding tasks. This solution repository includes their
+implementations; a starter version leaves them for completion. Follow
+[Notebook 7](./notebooks/7-interfacing-with-imu.ipynb) to inspect or complete the code and save edits
+before building.
 From the LX root in the base-station terminal, build and run the listener on the Duckiedrone:
 
 ```bash
-dts code build -R DUCKIEDRONE_NAME
-dts code workbench -R DUCKIEDRONE_NAME
+dts code build -R amelia
+dts code workbench -R amelia
 ```
 
-The workbench displays the listener's output; stop it with `Ctrl-C` when finished.
+Replace `amelia` with the configured Duckiedrone name. The workbench displays the listener's output; stop it with `Ctrl-C` when finished.
 
 ## Further reading
 
@@ -109,10 +119,12 @@ cover the main stages of this LX:
 
 - **ROS 2 subscriber:** The [sensor_msgs/Imu message definition](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Imu.msg) specifies the fields unpacked in Notebook 7.
 
+- **Notation:** The [notation reference](./assets/data/notation.md) collects the symbols used throughout the notebooks.
+
 ## For LX authors
 
 Learner material is in `notebooks/` and `packages/`; checkpoint prompts and model answers are in
-`checkpoint_data/`, and structural and subscriber checks are in `tests/`. Run checks from the LX root:
+`checkpoint_data/`, and structural, checkpoint, and numerical-conversion checks are in `tests/`. Run checks from the LX root:
 
 ```bash
 python3 -m pytest tests/

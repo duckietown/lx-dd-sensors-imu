@@ -14,7 +14,7 @@
     {
       "id": "imu-no-dtps-driver",
       "question": "Why does the IMU reach ROS 2 through MAVROS2 instead of through a DTPS driver on the Raspberry Pi, like the time-of-flight rangefinder and the camera?",
-      "model_answer": "The IMU chip sits on the flight-controller board and PX4 already reads it, because the fast stabilization loop needs it there. PX4 also fuses the attitude estimate before the data leaves the board, so a Raspberry Pi driver would only repeat what MAVROS2 already bridges.",
+      "model_answer": "The IMU chip is connected to the flight controller, where PX4 reads it for estimation and stabilization. MAVROS2 makes the resulting MAVLink measurements and attitude estimate available to ROS 2 on the Raspberry Pi, without requiring a separate Raspberry Pi driver for the IMU chip.",
       "evidence": [
         {
           "label": "Why not a Duckietown Postal Service (DTPS) driver, like the other sensors?",
@@ -24,12 +24,23 @@
     },
     {
       "id": "imu-estimator-measurements",
-      "question": "Which data travels alongside PX4's orientation estimate without being an output of its attitude estimator?",
-      "model_answer": "Calibrated angular rates and accelerations accompany the orientation quaternion. They are sensor measurements, not outputs of the EKF2 attitude estimator.",
+      "question": "How do the angular-velocity and proper-acceleration fields differ from the orientation field, and can estimator information affect them?",
+      "model_answer": "Orientation is an estimated relationship between frames. Angular velocity and proper acceleration are measurement-derived quantities that have undergone processing; that processing can include estimated sensor-bias corrections. They should therefore not be described as completely independent of the estimator.",
       "evidence": [
         {
           "label": "The flight controller's onboard attitude estimator",
           "anchor": "#the-flight-controllers-onboard-attitude-estimator"
+        }
+      ]
+    },
+    {
+      "id": "imu-cached-acceleration",
+      "question": "Does a single timestamp on /mavros/imu/data establish that its orientation, angular velocity, and acceleration were acquired simultaneously?",
+      "model_answer": "No. The plugin publishes on an attitude update and includes its latest cached acceleration. The shared timestamp does not separately identify the acquisition time of that acceleration.",
+      "evidence": [
+        {
+          "label": "From PX4 to MAVROS2 over MAVLink",
+          "anchor": "#from-px4-to-mavros2-over-mavlink"
         }
       ]
     }

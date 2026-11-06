@@ -23,6 +23,17 @@
       ]
     },
     {
+      "id": "imu-quaternion-order",
+      "question": "A rotation q1 is followed by a rotation q2. Which quaternion product represents the combined rotation, and does the order matter?",
+      "model_answer": "The product q2 q1: the rightmost factor acts first. As with rotation matrices, reversing the factors generally gives a different orientation.",
+      "evidence": [
+        {
+          "label": "A few properties of quaternions",
+          "anchor": "#a-few-properties-of-quaternions"
+        }
+      ]
+    },
+    {
       "id": "imu-quaternion-display",
       "question": "Why convert a flight controller's quaternion orientation estimate to Euler angles for a display?",
       "model_answer": "Roll, pitch, and yaw are easier for people to interpret than quaternion components. Converting for display retains the chosen Euler convention and its gimbal-lock limitation.",
@@ -30,6 +41,17 @@
         {
           "label": "Converting to Euler angles",
           "anchor": "#converting-to-euler-angles"
+        }
+      ]
+    },
+    {
+      "id": "imu-quaternion-sign",
+      "question": "A quaternion changes from q to -q while describing the same frames. Does this establish that the Duckiedrone rotated?",
+      "model_answer": "No. A unit quaternion and its negative represent the same orientation. A component sign change alone does not establish physical motion.",
+      "evidence": [
+        {
+          "label": "A few properties of quaternions",
+          "anchor": "#a-few-properties-of-quaternions"
         }
       ]
     }

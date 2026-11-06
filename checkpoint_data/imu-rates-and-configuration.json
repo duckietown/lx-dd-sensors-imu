@@ -2,12 +2,23 @@
   "checkpoints": [
     {
       "id": "imu-rate-source",
-      "question": "An application needs /mavros/imu/data_raw at a different rate. What should change, and why does changing IMU_INTEG_RATE not do it?",
-      "model_answer": "The interval of the HIGHRES_IMU MAVLink message. IMU_INTEG_RATE acts inside PX4 on the data it prepares; how often that data reaches the Raspberry Pi is decided at the MAVLink link, one interval per message.",
+      "question": "An application needs /mavros/imu/data_raw at a lower rate. Which setting should be changed, and how does it differ from IMU_INTEG_RATE?",
+      "model_answer": "Change the HIGHRES_IMU MAVLink message interval. IMU_INTEG_RATE controls integrated IMU output inside PX4, while the message interval requests a transmission rate on the MAVLink connection. Source availability can still limit the achieved rate.",
       "evidence": [
         {
           "label": "Configuring IMU rates and streams",
           "anchor": "#configuring-imu-rates-and-streams"
+        }
+      ]
+    },
+    {
+      "id": "imu-processing-rate-cap",
+      "question": "IMU_INTEG_RATE is 250 Hz and HIGHRES_IMU is requested at 500 Hz. About how often can /mavros/imu/data_raw arrive, and why?",
+      "model_answer": "At most about 250 Hz. PX4 sends HIGHRES_IMU only when a new integrated IMU sample exists, so the processing rate caps the data available for transmission. The link and scheduling can lower the measured rate further.",
+      "evidence": [
+        {
+          "label": "Setting the flight-controller parameters",
+          "anchor": "#setting-the-flight-controller-parameters"
         }
       ]
     },
@@ -25,11 +36,22 @@
     {
       "id": "imu-plugin-traffic",
       "question": "Why does removing the MAVROS2 imu plugin not reduce the traffic between the flight controller and the Raspberry Pi?",
-      "model_answer": "The plugin only turns MAVLink messages that have already arrived into ROS 2 topics. PX4 decides what to send and keeps sending HIGHRES_IMU and ATTITUDE_QUATERNION at their intervals; only changing those intervals reduces the traffic.",
+      "model_answer": "Disabling the plugin stops its ROS 2 publications but does not itself change PX4 transmission intervals. The messages still cross the link; reducing their traffic requires changing or disabling the corresponding MAVLink streams.",
       "evidence": [
         {
           "label": "One switch that looks like a rate and is not",
           "anchor": "#one-switch-that-looks-like-a-rate-and-is-not"
+        }
+      ]
+    },
+    {
+      "id": "imu-command-acceptance",
+      "question": "A stream-rate request returns success, but the measured topic rate stays below the requested value. What does each observation establish?",
+      "model_answer": "The response establishes that the command was accepted. The measured rate describes actual arrivals at the subscriber, which can remain limited by source updates, transport, scheduling, or another interval request. Acceptance alone does not establish the achieved rate.",
+      "evidence": [
+        {
+          "label": "Restore the stream",
+          "anchor": "#restore-the-stream"
         }
       ]
     }

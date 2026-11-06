@@ -17,19 +17,41 @@
       "model_answer": "Proper acceleration points opposite gravity and shifts across the sensor axes when the Duckiedrone tilts, providing a roll and pitch reference. Rotating about the vertical leaves that reading unchanged, so it cannot distinguish headings.",
       "evidence": [
         {
-          "label": "Why the IMU data matters",
-          "anchor": "#why-the-imu-data-matters"
+          "label": "Why the IMU?",
+          "anchor": "#why-the-imu"
         }
       ]
     },
     {
       "id": "imu-bias-position-drift",
       "question": "How does a constant accelerometer bias change dead-reckoned position error over time?",
-      "model_answer": "The bias produces a velocity error proportional to elapsed time and a position error proportional to the square of elapsed time, even if the Duckiedrone never moves.",
+      "model_answer": "For fixed orientation, correct gravity compensation, and zero initial position and velocity errors, a constant residual acceleration error b produces position error (1/2) b t^2.",
       "evidence": [
         {
-          "label": "What an IMU does not measure",
-          "anchor": "#what-an-imu-does-not-measure"
+          "label": "The effect of bias in position estimates: why \"IMUs drift\"",
+          "anchor": "#the-effect-of-bias-in-position-estimates-why-imus-drift"
+        }
+      ]
+    },
+    {
+      "id": "imu-mean-and-tilt",
+      "question": "Why does a nonzero horizontal mean in one stationary recording not establish accelerometer bias?",
+      "model_answer": "The mean can contain a gravity projection caused by tilt, sensor bias, and finite-sample noise. One stationary orientation does not separate these contributions.",
+      "evidence": [
+        {
+          "label": "Noise and bias in measurements",
+          "anchor": "#noise-and-bias-in-measurements"
+        }
+      ]
+    },
+    {
+      "id": "imu-reference-window",
+      "question": "Why does increasing the reference duration in Activity 2 not guarantee a smaller final position error?",
+      "model_answer": "The finite average retains uncertainty, the later signal can differ from the reference interval, and moving the reference boundary also changes the samples being integrated. Longer averaging can reduce uncertainty under stable conditions, but this comparison does not isolate that effect.",
+      "evidence": [
+        {
+          "label": "What the model and the recording show",
+          "anchor": "#what-the-model-and-the-recording-show"
         }
       ]
     }
